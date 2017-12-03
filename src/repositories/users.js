@@ -1,12 +1,8 @@
 const chance = require('chance').Chance();
 
-const { sequelize, Sequelize } = require('../services/sequelize');
+const { User } = require('../models');
 const { Repository } = require('./basic');
 const { convertFieldToDBConditions } = require('../utils/sequelize');
-
-const USER_IP_LENGTH = 45;
-const USER_NAME_MAX_LENGTH = 80;
-const USER_NAME_MIN_LENGTH = 3;
 
 class UsersRepository extends Repository {
   async create({ values }) {
@@ -28,6 +24,10 @@ class UsersRepository extends Repository {
 
     return name;
   }
+
+  // async getUserRooms({ userId }) {
+  //   this.
+  // }
 }
 
 function convertFilterToDBConditions({ filter }) {
@@ -48,32 +48,7 @@ function convertFilterToDBConditions({ filter }) {
   return searchConditions;
 }
 
-const userModelSchema = {
-  ip: {
-    type: Sequelize.STRING(USER_IP_LENGTH),
-    validate: { isIP: true },
-    set(value) {
-      this.setDataValue('ip', value.toLowerCase());
-    },
-    primaryKey: true,
-  },
-  name: {
-    type: Sequelize.STRING(USER_NAME_MAX_LENGTH),
-    allowNull: false,
-    validate: { len: [USER_NAME_MIN_LENGTH, USER_NAME_MAX_LENGTH] },
-  },
-  online: {
-    type: Sequelize.BOOLEAN,
-    default: true,
-  },
-};
-
-const UserModel = sequelize.define('user', userModelSchema);
-module.exports.UserModel = UserModel;
-
-UserModel.getSimpleObject = ({ instance }) => instance.toJSON();
-
 module.exports.usersRepository = new UsersRepository({
-  model: UserModel,
+  model: User,
   convertFilterToDBConditions,
 });

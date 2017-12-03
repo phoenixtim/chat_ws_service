@@ -1,11 +1,10 @@
 const crypto = require('crypto');
 
-const { sequelize, Sequelize } = require('../services/sequelize');
+const { Room } = require('../models');
 const { Repository } = require('./basic');
 const { convertFieldToDBConditions } = require('../utils/sequelize');
 
 const ROOM_ID_LENGTH = 24;
-const ROOM_NAME_MAX_LENGTH = 100;
 
 class RoomsRepository extends Repository {
   async create({ values }) {
@@ -41,23 +40,7 @@ function convertFilterToDBConditions({ filter }) {
   return searchConditions;
 }
 
-const roomModelSchema = {
-  id: {
-    type: Sequelize.STRING(ROOM_ID_LENGTH),
-    primaryKey: true,
-  },
-  name: {
-    type: Sequelize.STRING(ROOM_NAME_MAX_LENGTH),
-    allowNull: false,
-  },
-};
-
-const RoomModel = sequelize.define('room', roomModelSchema);
-module.exports.RoomModel = RoomModel;
-
-RoomModel.getSimpleObject = ({ instance }) => instance.toJSON();
-
 module.exports.roomsRepository = new RoomsRepository({
-  model: RoomModel,
+  model: Room,
   convertFilterToDBConditions,
 });

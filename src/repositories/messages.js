@@ -1,4 +1,4 @@
-const { sequelize, Sequelize } = require('../services/sequelize');
+const { Message } = require('../models');
 const { Repository } = require('./basic');
 const { convertFieldToDBConditions } = require('../utils/sequelize');
 
@@ -23,21 +23,7 @@ function convertFilterToDBConditions({ filter }) {
   return searchConditions;
 }
 
-const messageModelSchema = {
-  id: {
-    type: Sequelize.BIGINT,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  text: Sequelize.TEXT,
-};
-
-const MessageModel = sequelize.define('message', messageModelSchema);
-module.exports.MessageModel = MessageModel;
-
-MessageModel.getSimpleObject = ({ instance }) => instance.toJSON();
-
 module.exports.messagesRepository = new MessagesRepository({
-  model: MessageModel,
+  model: Message,
   convertFilterToDBConditions,
 });
