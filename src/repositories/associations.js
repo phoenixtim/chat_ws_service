@@ -8,4 +8,7 @@ module.exports = function () {
 
   RoomModel.hasMany(MessageModel, { as: 'messages', foreignKey: 'roomId', onDelete: 'CASCADE' });
   MessageModel.belongsTo(RoomModel, { as: 'room' });
+
+  UserModel.belongsToMany(RoomModel, { as: 'Rooms', through: 'room_users', foreignKey: 'userIp' });
+  RoomModel.belongsToMany(UserModel, { as: 'Users', through: 'room_users', foreignKey: 'roomId' });
 };
