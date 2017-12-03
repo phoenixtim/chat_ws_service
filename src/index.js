@@ -1,16 +1,19 @@
 const Express = require('express');
 const http = require('http');
-// const Socket = require('socket.io');
 
 const config = require('./utils/config');
 const { connectDB } = require('./services/sequelize');
-
-const app = Express();
-const server = http.Server(app);
-// const io = Socket(server);
+const socket = require('./services/socket');
+const socketResponses = require('./api/socket');
+const associate = require('./repositories/associations');
 
 async function runService() {
+  const app = Express();
+  const server = http.Server(app);
+
+  associate();
   await connectDB();
+  socket.initSocket(server, socketResponses);
 
   server.listen(config.port, () => {
     console.log(`service started on port ${config.port}`); // eslint-disable-line no-console

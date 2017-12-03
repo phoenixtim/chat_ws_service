@@ -10,6 +10,13 @@
     "arrow-parens": ["error", "as-needed"],
     "indent": ["error", 2, {
       "MemberExpression": 0
-    }]
+    }],
+    "max-len": ["error", 120],
+    "object-curly-newline": ["error", {
+      "multiline": true
+    }],
+    "no-param-reassign": "off",
+    "no-await-in-loop": "off",
+    "func-names": ["warn", "never"]
   }
 }
