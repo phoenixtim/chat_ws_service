@@ -1,0 +1,30 @@
+{
+  "name": "chat-ws-service",
+  "version": "1.0.0",
+  "description": "simple websocket chat service",
+  "main": "src/index.js",
+  "dependencies": {
+    "express": "^4.16.2",
+    "pg": "^6.4.2",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.24.0",
+    "socket.io": "^2.0.4"
+  },
+  "devDependencies": {
+    "eslint": "^4.12.1",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-react": "^7.5.1"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "NODE_ENV=development CONFIG_PATH=config.json nodemon src/index.js"
+  },
+  "keywords": [
+    "chat",
+    "websocket"
+  ],
+  "author": "Artem Apartsev",
+  "license": "MIT"
+}

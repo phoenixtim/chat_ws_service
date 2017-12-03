@@ -1,0 +1,15 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    "no-console": ["error", {
+      "allow": [
+        "warn",
+        "error"
+      ]
+    }],
+    "arrow-parens": ["error", "as-needed"],
+    "indent": ["error", 2, {
+      "MemberExpression": 0
+    }]
+  }
+}
