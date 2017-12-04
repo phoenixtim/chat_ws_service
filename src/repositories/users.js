@@ -1,6 +1,6 @@
 const chance = require('chance').Chance();
 
-const { User } = require('../models');
+const { User, Room } = require('../models');
 const { Repository } = require('./basic');
 const { convertFieldToDBConditions } = require('../utils/sequelize');
 
@@ -25,9 +25,15 @@ class UsersRepository extends Repository {
     return name;
   }
 
-  // async getUserRooms({ userId }) {
-  //   this.
-  // }
+  async getUserRooms({ userId }) {
+    const user = await this.model.findOne({
+      where: { ip: userId },
+      include: [{ model: Room, as: 'Rooms' }],
+    });
+
+    const userRooms = user && user.Rooms ? user.Rooms : [];
+    return userRooms.map(room => (Room.getSimpleObject ? Room.getSimpleObject({ instance: room }) : room.toJSON()));
+  }
 }
 
 function convertFilterToDBConditions({ filter }) {

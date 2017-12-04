@@ -11,7 +11,7 @@ module.exports.convertFieldToDBConditions = function (filter) {
     if (filter.startsWith('>_')) {
       dbConditions[Sequelize.Op.gt] = filter.slice(2);
     } else if (filter.startsWith('like_')) {
-      dbConditions[Sequelize.Op.iLike] = filter.slice(5);
+      dbConditions[Sequelize.Op.iLike] = `%${filter.slice(5)}%`;
     } else {
       return filter;
     }

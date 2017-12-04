@@ -27,4 +27,4 @@ const userModelSchema = {
 const UserModel = sequelize.define('user', userModelSchema);
 module.exports = UserModel;
 
-UserModel.getSimpleObject = ({ instance }) => instance.toJSON();
+UserModel.getSimpleObject = ({ instance }) => instance.dataValues;

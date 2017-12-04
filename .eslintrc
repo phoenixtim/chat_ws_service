@@ -12,11 +12,13 @@
       "MemberExpression": 0
     }],
     "max-len": ["error", 120],
-    "object-curly-newline": ["error", {
-      "multiline": true
-    }],
+    "object-curly-newline": "off",
     "no-param-reassign": "off",
     "no-await-in-loop": "off",
-    "func-names": ["warn", "never"]
+    "func-names": ["warn", "never"],
+    "no-throw-literal": "off",
+    "no-confusing-arrow": ["error", {
+      "allowParens": true
+    }]
   }
 }

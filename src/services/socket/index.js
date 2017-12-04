@@ -7,9 +7,26 @@ const { usersRepository } = require('../../repositories/users');
 class SocketHandler {
   constructor() {
     this.namesDelimeter = '-';
+    this.messageNames = {
+      roomCreate: `room${this.namesDelimeter}create`,
+      roomChangeName: `room${this.namesDelimeter}name${this.namesDelimeter}change`,
+      roomNewName: `room${this.namesDelimeter}name${this.namesDelimeter}new`,
+
+      roomJoin: `room${this.namesDelimeter}join`,
+      userConnected: `user${this.namesDelimeter}connected`,
+      roomLeave: `room${this.namesDelimeter}leave`,
+      userDisconnected: `user${this.namesDelimeter}disconnected`,
+
+      roomUsers: `room${this.namesDelimeter}users`,
+      roomsList: `room${this.namesDelimeter}list`,
+
+      sendMessage: `message${this.namesDelimeter}send`,
+      message: 'message',
+    };
   }
 
   initSocket(nodeHttpServer, responses, options) {
+    this.responses = responses;
     if (options) {
       if (options.delimeter) {
         this.namesDelimeter = options.delimeter;
@@ -19,8 +36,10 @@ class SocketHandler {
     this.socketIO = SocketIO(nodeHttpServer, { serveClient: false });
     this.socketIO.use(SocketHandler.socketAuth);
 
-    this.socketIO.on('connection', socket => {
+    this.socketIO.on('connection', async socket => {
       connectionsRepo.addUserConnection(socket.user.ip, socket.id);
+      const userRooms = await usersRepository.getUserRooms({ userId: socket.user.ip });
+      userRooms.forEach(room => socket.join(room.id));
 
       socket.on('disconnect', () => {
         connectionsRepo.deleteUserConnection(socket.user.ip);
@@ -30,19 +49,24 @@ class SocketHandler {
         });
       });
 
-      this.registerResponses(socket, responses);
+      this.registerResponses(socket, this.responses);
     });
   }
 
-  sendMessage({ userId, roomId, messageName, data }) {
+  sendMessage({ userId, roomId, messageName, data, from }) {
+    let messageData = data;
+    if (from) {
+      messageData = { from, message: data };
+    }
+
     if (userId) {
       const userSocketId = connectionsRepo.getUserConnection(userId);
       if (userSocketId) {
-        this.socketIO.to(userSocketId).emit(messageName, { status: 200, data });
+        this.socketIO.to(userSocketId).emit(messageName, { status: 200, data: messageData });
       }
     }
     if (roomId) {
-      this.socketIO.to(roomId).emit(messageName, { status: 200, data });
+      this.socketIO.to(roomId).emit(messageName, { status: 200, data: messageData });
     }
   }
 
@@ -57,15 +81,14 @@ class SocketHandler {
         try {
           const validationResult = Joi.validate(request, response.requestSchema, { abortEarly: false });
           if (validationResult.error) {
-            throw { // eslint-disable-line no-throw-literal
+            throw {
               code: 400,
               message: validationResult.error.details.map(detail => `At '${detail.path}': ${detail.message}.`).join(' ')
               .replace(/"/g, "'"),
             };
           }
 
-          const context = { user: socket.user };
-          const responseResult = response.handler(context, request);
+          const responseResult = response.handler(socket, request);
           if (responseResult instanceof Promise) {
             result = await responseResult;
           } else {
